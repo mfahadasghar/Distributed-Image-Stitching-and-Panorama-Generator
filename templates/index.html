@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed Image Stitching & Panorama Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🖼️ Distributed Image Stitching & Panorama Generator</h1>
+            <p class="subtitle">Upload multiple images to create stunning panoramas using parallel processing</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="section upload-section">
+            <h2>📤 Step 1: Upload Images</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Click to select or drag and drop images here</p>
+                    <p class="upload-hint">Minimum 2 images required (JPG, PNG, JPEG)</p>
+                    <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="previewSection" class="preview-section" style="display: none;">
+                <h3>Selected Images (<span id="imageCount">0</span>)</h3>
+                <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+            <!-- Feature Detector Selection -->
+            <div class="options-section" id="optionsSection" style="display: none;">
+                <h3>⚙️ Stitching Options</h3>
+                <div class="option-group">
+                    <label for="featureDetector">Feature Detector:</label>
+                    <select id="featureDetector">
+                        <option value="SIFT" selected>SIFT (Best Quality)</option>
+                        <option value="ORB">ORB (Faster)</option>
+                        <option value="AKAZE">AKAZE (Balanced)</option>
+                    </select>
+                    <p class="option-hint">SIFT provides best quality but slower, ORB is fastest</p>
+                </div>
+            </div>
+
+            <button id="startStitching" class="btn btn-primary" style="display: none;">
+                🚀 Start Stitching
+            </button>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="section progress-section" id="progressSection" style="display: none;">
+            <h2>⚡ Step 2: Real-time Progress</h2>
+
+            <div class="progress-container">
+                <div class="progress-stage">
+                    <div class="stage-header">
+                        <span class="stage-icon">⏳</span>
+                        <span class="stage-name" id="currentStage">Initializing...</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressPercent">0%</span>
+                        <span id="progressMessage">Waiting to start...</span>
+                    </div>
+                </div>
+
+                <div class="progress-details">
+                    <h3>Processing Stages:</h3>
+                    <div class="stages-list">
+                        <div class="stage-item" id="stage-loading">
+                            <span class="stage-status">⏺️</span>
+                            <span>Loading Images</span>
+                        </div>
+                        <div class="stage-item" id="stage-features">
+                            <span class="stage-status">⏺️</span>
+                            <span>Detecting Features (Parallel)</span>
+                        </div>
+                        <div class="stage-item" id="stage-stitching">
+                            <span class="stage-status">⏺️</span>
+                            <span>Stitching Images</span>
+                        </div>
+                        <div class="stage-item" id="stage-complete">
+                            <span class="stage-status">⏺️</span>
+                            <span>Complete</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="processing-info" id="processingInfo">
+                    <p>🔧 Using parallel processing with distributed workers</p>
+                    <p>💡 Feature detection is running on multiple CPU cores</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div class="section result-section" id="resultSection" style="display: none;">
+            <h2>🎉 Step 3: Your Panorama</h2>
+
+            <div class="result-container">
+                <div class="panorama-display">
+                    <img id="panoramaImage" src="" alt="Generated Panorama">
+                </div>
+
+                <div class="result-actions">
+                    <button id="downloadBtn" class="btn btn-success">📥 Download Panorama</button>
+                    <button id="newStitchBtn" class="btn btn-secondary">🔄 Create New Panorama</button>
+                </div>
+
+                <div class="stats-container" id="statsContainer">
+                    <h3>📊 Statistics</h3>
+                    <div class="stats-grid" id="statsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Section -->
+        <div class="section error-section" id="errorSection" style="display: none;">
+            <h2>❌ Error</h2>
+            <div class="error-container">
+                <p id="errorMessage"></p>
+                <button id="retryBtn" class="btn btn-primary">🔄 Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Built with Python, OpenCV, Flask, and WebSockets | Parallel & Distributed Computing Project</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
